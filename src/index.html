@@ -13,6 +13,7 @@
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -64,14 +65,14 @@
 			</div>
 
 			<div class="col-xs-12 col-sm-8 col-sm-push-2">
-				<form class="navbar-form text-center" onSubmit="App.verify(event);">
+				<form class="navbar-form text-center" onSubmit="return App.verify(event);">
 					<div class="form-group">
-						<input type="text" id="message" class="form-control message" placeholder="Enter signed message" name="">
+						<input type="text" id="signed-message" class="form-control message" placeholder="Enter signed message" name="">
 					</div>
 					<br /><br />
 
 					<div class="form-group">
-						<input type="text" id="message" class="form-control message" placeholder="Enter original message" name="">
+						<input type="text" id="original-message" class="form-control message" placeholder="Enter original message" name="">
 					</div>
 
 					<br /><br />
@@ -92,6 +93,7 @@
 
 		</div>
 
+		<div id="snackbar"></div>
 
 	</div>
 
