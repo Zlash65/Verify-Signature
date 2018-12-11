@@ -4,10 +4,10 @@ App = {
 	account: '0x0',
 
 	init: function () {
-		return await App.initWeb3();
+		return App.initWeb3();
 	},
 
-	initWeb3: async function () {
+	initWeb3: function () {
 		// TODO: refactor conditional
 		if (typeof web3 !== 'undefined') {
 			// If a web3 instance is already provided by Meta Mask.
@@ -15,7 +15,7 @@ App = {
 			web3 = new Web3(web3.currentProvider);
 		} else {
 			// Specify default instance if no web3 instance provided
-			App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+			App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
 			web3 = new Web3(App.web3Provider);
 		}
 
@@ -32,6 +32,27 @@ App = {
 
 		});
 	},
+
+	toHex: function (str) {
+		var hex = ''
+		for (var i = 0; i < str.length; i++) {
+			hex += '' + str.charCodeAt(i).toString(16)
+		}
+		return hex
+	},
+
+	sign: function (event) {
+		event.preventDefault();
+		var message = $('#message').val();
+		var addr = web3.eth.accounts[0];
+
+		// var signature = web3.eth.sign(addr, '0x' + web3.toHex(message));
+		web3.personal.sign(web3.toHex(message),addr, (err,signature) => {
+			$(".signed-by").val(addr);
+			$(".signed-data").val(signature);
+		})
+
+	}
 
 };
 
