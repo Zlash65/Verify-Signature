@@ -34,6 +34,7 @@ App = {
 	},
 
 	toHex: function (str) {
+		// calculate hex of the given message
 		var hex = ''
 		for (var i = 0; i < str.length; i++) {
 			hex += '' + str.charCodeAt(i).toString(16)
@@ -42,10 +43,12 @@ App = {
 	},
 
 	sign: function (event) {
-		event.preventDefault();
+		event.preventDefault(); // prevent refreshing on form data submit
+
 		var message = $('#message').val();
 		var addr = web3.eth.accounts[0];
 
+		// sign message with personal account address
 		// var signature = web3.eth.sign(addr, '0x' + web3.toHex(message));
 		web3.personal.sign(web3.toHex(message), addr, (err, signature) => {
 			$(".signed-by").val(addr);
@@ -71,30 +74,40 @@ App = {
 		// 	}
 		// })
 
+		// extract various components form signed data to pass to ecrecover
+		// for extracting account address
 		var signature = signed_data.substr(2); // remove 0x
 		const r = '0x' + signature.slice(0, 64);
 		const s = '0x' + signature.slice(64, 128);
 		const v = '0x' + signature.slice(128, 130);
 		const v_decimal = web3.toDecimal(v);
 
+		// call the solidity function to retreive address from signed data
 		App.contracts.Verify.deployed().then(instance => {
 			var prefix_msg = `\x19Ethereum Signed Message:\n${original_data.length}${original_data}`;
 			var prefix_msg_sha = web3.sha3(prefix_msg);
 
 			return instance.recoverAddr.call(prefix_msg_sha, v_decimal, r, s);
 		}).then(address => {
+			// set retreived address into the field
 			$(".signed-by-2").val(address);
 			console.log(address);
 
 			var x = document.getElementById("snackbar");
 			x.className = "show";
 
+			// if retreived address matches current user's address, display "Verified"
+			// else display "Data Mismatch" which can be due to wrong original message passed
+			// or because the user's address is not the same as the one who signed the data.
 			if(address == addr) {
 				x.innerHTML = "Verified";
 			} else {
 				x.innerHTML = "Data Mismatch";
 			}
+
+			// show toast for 3 seconds
 			setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+
 		}).catch(e => {
 			console.log(e);
 		})
